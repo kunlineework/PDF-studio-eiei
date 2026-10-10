@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PDF Studio – รวมไฟล์ แก้ไข เซ็นเอกสาร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f2f7;--pn:#ffffff;--tx:#2b2540;--mu:#8c86a0;--bd:#e7e3f1;--pa:#efe9fc;--pa2:#e0d5fa;--rd:#7c5cd6;--rd2:#6746c2;--hd:#2b2540;--sh:0 6px 24px rgba(90,70,150,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16121f;--pn:#221c31;--tx:#efeaff;--mu:#a79fc0;--bd:#3a3250;--pa:#2f2647;--pa2:#40355f;--rd:#9b82ec;--rd2:#b8a6f7;--hd:#0f0b18;--sh:0 6px 24px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#16121f;--pn:#221c31;--tx:#efeaff;--mu:#a79fc0;--bd:#3a3250;--pa:#2f2647;--pa2:#40355f;--rd:#9b82ec;--rd2:#b8a6f7;--hd:#0f0b18;--sh:0 6px 24px rgba(0,0,0,.35)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--tx);font:14px/1.45 "Sarabun","Noto Sans Thai",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+header{background:linear-gradient(120deg,var(--pa),var(--pn) 70%);border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 16px}
+.logo{display:flex;align-items:center;gap:10px;font:600 18px "Prompt","Sarabun",sans-serif;letter-spacing:.2px;margin-right:10px}
+.logo i{background:linear-gradient(135deg,#b7a2f2,#7c5cd6);color:#fff;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font:600 11px "Prompt",sans-serif;font-style:normal;box-shadow:0 4px 12px rgba(124,92,214,.35)}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--pn);color:var(--tx);border-radius:10px;padding:6px 11px;flex:none;min-height:36px;transition:background .15s,border-color .15s,box-shadow .15s}
+button:hover{border-color:var(--rd);background:var(--pa)}
+button.pri{background:linear-gradient(135deg,#9a7ee6,#7c5cd6);border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 14px rgba(124,92,214,.35)}
+button.pri:hover{filter:brightness(1.06);background:linear-gradient(135deg,#9a7ee6,#7c5cd6)}
+header button:not(.pri){background:rgba(255,255,255,.65);color:var(--tx)}
+.sp{flex:1}
+header input{background:var(--pn);border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:7px 12px;width:150px;font:inherit}
+.empty{margin:auto;border:2px dashed var(--pa2);border-radius:22px;background:linear-gradient(160deg,var(--pa),var(--pn));text-align:center;padding:56px 28px;color:var(--mu);max-width:560px;box-shadow:var(--sh)}
+.empty h2{color:var(--tx);margin:8px 0;font-family:"Prompt","Sarabun",sans-serif;font-weight:500}.empty .big{font-size:52px}
+.app{flex:1;min-height:0;display:flex;gap:14px;padding:14px}
+.app[hidden],.empty[hidden],[hidden]{display:none!important}
+.side{width:196px;flex:none;overflow-y:auto;background:var(--pn);border:1px solid var(--bd);border-radius:18px;box-shadow:var(--sh);padding:12px;display:flex;flex-direction:column;gap:10px}
+.card{border:2px solid transparent;border-radius:14px;padding:7px;cursor:pointer;background:var(--bg);flex:none;transition:border-color .15s}
+.card:hover{border-color:var(--pa2)}
+.card.act{border-color:var(--rd);background:var(--pa)}.card.over{outline:2px dashed var(--rd)}.card.drag{opacity:.4}
+.card.add{border:2px dashed var(--pa2);background:transparent;text-align:center;padding:16px 6px;color:var(--rd)}
+.card.add:hover{background:var(--pa);border-color:var(--rd)}
+.plus{font-size:30px;line-height:1;font-weight:300}
+.th{height:150px;display:grid;place-items:center;overflow:hidden;position:relative}
+.th img{box-shadow:0 3px 10px rgba(60,40,120,.22);transition:transform .2s;background:#fff;border-radius:2px}
+.num{text-align:center;font-size:12px;color:var(--mu);margin-top:5px;font-weight:500}
+.acts{display:flex;justify-content:center;gap:1px;margin-top:2px}
+.acts button{padding:2px 6px;font-size:13px;border:none;background:transparent;min-height:28px;border-radius:8px}
+.badge{position:absolute;top:2px;right:2px;background:var(--rd);color:#fff;border-radius:10px;font-size:11px;padding:1px 7px}
+.center{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
+.tbw{background:var(--pn);border:1px solid var(--bd);border-radius:18px;box-shadow:var(--sh);flex:none}
+.tb{display:flex;align-items:stretch;gap:6px;padding:8px 12px;flex-wrap:wrap}
+.tb+.tb,.tb+.opts{border-top:1px solid var(--bd)}
+.grp{display:flex;flex-direction:column;gap:4px;padding:0 10px;border-right:1px solid var(--bd);flex:none}
+.grp:last-child{border-right:0}
+.gl{font-size:11px;color:var(--mu);font-weight:600;letter-spacing:.4px}
+.gb{display:flex;align-items:center;gap:4px}
+.tbtn{display:flex;align-items:center;gap:6px;border-color:transparent;background:transparent;padding:6px 10px}
+.tbtn.on{background:var(--pa);border-color:var(--rd);color:var(--rd2);font-weight:600}
+.tbtn svg{display:block}
+.tbtn i{display:grid;place-items:center}
+.sep{width:1px;height:22px;background:var(--bd);margin:0 2px;flex:none}
+#zm{width:60px;padding:6px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;text-align:center}
+#pInfo{min-width:62px;text-align:center;font-weight:500}
+.opts{display:flex;align-items:center;gap:12px;padding:9px 14px;flex-wrap:wrap;min-height:54px;background:linear-gradient(90deg,var(--pa),var(--pn));border-radius:0 0 18px 18px}
+.chips{display:flex;gap:8px;align-items:center}
+.chips.wrap{flex-wrap:wrap}
+.sw{width:26px;height:26px;border-radius:50%;padding:0;min-height:0;border:2px solid var(--pn);box-shadow:0 0 0 1px var(--bd);position:relative;cursor:pointer}
+.sw:hover{transform:scale(1.12);background-clip:padding-box}
+.sw.on{box-shadow:0 0 0 2px var(--pn),0 0 0 4px var(--rd)}
+.sw.cust{background:conic-gradient(#f87171,#fbbf24,#4ade80,#38bdf8,#a78bfa,#f472b6,#f87171);overflow:hidden;display:inline-block}
+.sw.cust input{position:absolute;inset:-6px;width:40px;height:40px;opacity:0;cursor:pointer}
+input[type=range]{width:130px;accent-color:var(--rd)}
+.chips .s{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:3px 8px;cursor:pointer;height:40px;position:relative;flex:none}
+.chips .s:hover{border-color:var(--rd)}
+.chips .s img{height:100%;display:block}
+.chips .s .x{position:absolute;top:-8px;right:-8px;width:20px;height:20px;min-height:0;padding:0;border-radius:50%;background:var(--rd);color:#fff;border:2px solid var(--pn);font-size:13px;line-height:1;display:grid;place-items:center}
+.stage{flex:1;overflow:auto;padding:6px 10px 20px;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;border-radius:18px}
+.pg{position:relative;margin:0 auto;box-shadow:0 12px 36px rgba(70,50,130,.22);background:#fff;user-select:none;-webkit-user-select:none;border-radius:3px}
+.pg canvas{display:block;width:100%;height:100%}
+#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.pg[data-tool=pen],.pg[data-tool=hl]{cursor:crosshair;touch-action:none}
+.pg[data-tool=erase]{cursor:cell;touch-action:none}
+.pg[data-tool=text],.pg[data-tool=edit]{cursor:text}
+.pg[data-tool=tick],.pg[data-tool=cross]{cursor:copy}
+.it{position:absolute;transform:translate(-50%,-50%);touch-action:none;cursor:move;line-height:0}
+.it.sel{outline:1.5px dashed var(--rd);outline-offset:3px}
+.it.cv{pointer-events:none}
+.it img{width:100%;display:block;pointer-events:none}
+.it.tx{white-space:pre;line-height:1.25;font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif;min-height:1.25em;min-width:.5em;cursor:text}
+.it.tx:empty:before{content:"\200b"}
+.it.tx[contenteditable=true]{user-select:text;-webkit-user-select:text;outline:1.5px solid var(--rd);cursor:text}
+.hint{color:var(--mu);font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(30,20,60,.45);backdrop-filter:blur(3px);z-index:20;display:none;align-items:center;justify-content:center;padding:12px}
+.modal.on{display:flex}
+.box{background:var(--pn);border-radius:22px;max-width:100%;max-height:100%;overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(40,20,90,.35)}
+.box h3{margin:0 0 12px;font:500 18px "Prompt","Sarabun",sans-serif}
+.tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--bg);padding:4px;border-radius:12px;width:fit-content}
+.tabs button{border-color:transparent;background:transparent}
+.tabs button.act{background:var(--pn);color:var(--rd2);font-weight:600;box-shadow:0 2px 8px rgba(90,70,150,.15)}
+#pad{border:2px dashed var(--pa2);border-radius:14px;background:#fff;touch-action:none;width:100%;max-width:540px;height:200px;display:block;cursor:crosshair}
+.row{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.mdiv{height:1px;background:var(--bd);margin:18px 0 12px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--hd);color:#fff;padding:11px 20px;border-radius:12px;z-index:30;display:none;max-width:90%;box-shadow:var(--sh)}
+@media(max-width:1024px){.side{width:150px}.th{height:118px}.grp{padding:0 6px}}
+@media(max-width:760px){.app{flex-direction:column;padding:8px;gap:8px}.side{width:100%;height:142px;flex-direction:row;overflow-x:auto;overflow-y:hidden}.card{width:100px}.th{height:70px}.th img{max-width:70px!important;max-height:70px!important}.stage{padding:4px}.tl{display:none}.tb{flex-wrap:nowrap;overflow-x:auto}header input{width:100px}header .logo{display:none}.center{order:1}.side{order:2}.tbtn{padding:6px 9px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><i>PDF</i>PDF Studio</div>
+  <button id="bAdd">＋ เพิ่มไฟล์</button>
+  <button id="bAll">↻ หมุนทั้งหมด</button>
+  <button id="bClr">ล้างทั้งหมด</button>
+  <span class="sp"></span>
+  <input id="fn" value="merged" aria-label="ชื่อไฟล์">
+  <button class="pri" id="bDl">⬇ ดาวน์โหลด PDF</button>
+</header>
+<input type="file" id="fi" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,application/pdf,image/*" hidden>
+<div id="empty" class="empty">
+  <div class="big">📄</div>
+  <h2>ลากไฟล์มาวางที่นี่ หรือกดเพื่อเลือกไฟล์</h2>
+  <p>รองรับ PDF, PNG, JPG และไฟล์ภาพอื่นๆ — เลือกได้หลายไฟล์พร้อมกัน</p>
+  <button class="pri" id="bAdd2">เลือกไฟล์</button>
+</div>
+<div class="app" id="app" hidden>
+  <section class="center">
+    <div class="tbw">
+      <div class="tb">
+        <div class="grp"><div class="gl">หน้า</div><div class="gb"><button id="pPrev" title="หน้าก่อนหน้า">◀</button><span id="pInfo"></span><button id="pNext" title="หน้าถัดไป">▶</button><span class="sep"></span><button id="rL" title="หมุนซ้าย">↺</button><button id="rR" title="หมุนขวา">↻</button></div></div>
+        <div class="grp"><div class="gl">ซูม</div><div class="gb"><button id="zOut" title="ซูมออก">－</button><input id="zm" type="number" min="25" max="400" step="5" aria-label="ซูม %"><span>%</span><button id="zIn" title="ซูมเข้า">＋</button><button id="zFit" title="พอดีความกว้าง">พอดี</button></div></div>
+        <div class="grp"><div class="gl">ย้อนกลับ</div><div class="gb"><button id="uBtn" class="tbtn" title="เลิกทำ (Ctrl+Z)"><i data-i="undo"></i><span class="tl">เลิกทำ</span></button></div></div>
+      </div>
+      <div class="tb" id="tools">
+        <div class="grp"><div class="gl">เลือก</div><div class="gb"><button class="tbtn" data-t="select" title="เลือก / ย้ายวัตถุ"><i data-i="select"></i><span class="tl">เลือก</span></button></div></div>
+        <div class="grp"><div class="gl">ข้อความ</div><div class="gb"><button class="tbtn" data-t="text" title="เพิ่มข้อความ"><i data-i="text"></i><span class="tl">เพิ่มข้อความ</span></button><button class="tbtn" data-t="edit" title="แก้ไขข้อความเดิมใน PDF"><i data-i="edit"></i><span class="tl">แก้ข้อความ PDF</span></button></div></div>
+        <div class="grp"><div class="gl">วาดและไฮไลท์</div><div class="gb"><button class="tbtn" data-t="pen" title="ปากกา"><i data-i="pen"></i><span class="tl">ปากกา</span></button><button class="tbtn" data-t="hl" title="ไฮไลท์"><i data-i="hl"></i><span class="tl">ไฮไลท์</span></button><button class="tbtn" data-t="erase" title="ยางลบ"><i data-i="erase"></i><span class="tl">ยางลบ</span></button></div></div>
+        <div class="grp"><div class="gl">เครื่องหมาย</div><div class="gb"><button class="tbtn" data-t="tick" title="เครื่องหมายถูก"><i data-i="tick"></i><span class="tl">ถูก</span></button><button class="tbtn" data-t="cross" title="กากบาท"><i data-i="cross"></i><span class="tl">ผิด</span></button></div></div>
+        <div class="grp"><div class="gl">ลายเซ็น</div><div class="gb"><button class="tbtn" data-t="sig" title="ลายเซ็น"><i data-i="sig"></i><span class="tl">เซ็นชื่อ</span></button></div></div>
+      </div>
+      <div class="opts" id="opts">
+        <span id="oCol" class="chips"><span class="hint">สี</span><span id="oSw" class="chips"></span><label class="sw cust" id="colWrap" title="เลือกสีอื่น"><input type="color" id="col" aria-label="สีอื่นๆ"></label></span>
+        <span id="oSz" class="chips"><span class="hint">ขนาด</span><input type="range" id="sz"><b id="szv"></b></span>
+        <span id="oSig" class="chips"><span id="sigList" class="chips wrap"></span><button id="sNew">＋ สร้างลายเซ็นใหม่</button></span>
+        <button id="oDel">🗑 ลบที่เลือก</button>
+        <span id="oHint" class="hint"></span>
+      </div>
+    </div>
+    <div class="stage" id="stage"><div class="pg" id="pg"><canvas id="pc" width="10" height="10"></canvas><svg id="ov" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg></div></div>
+  </section>
+  <aside class="side" id="side"></aside>
+</div>
+
+<div class="modal" id="mSig"><div class="box" style="width:min(580px,100%)">
+  <h3>ลายเซ็นของคุณ</h3>
+  <div class="tabs"><button id="tD" class="act">วาดลายเซ็น</button><button id="tU">นำเข้าภาพ</button></div>
+  <div id="pD"><canvas id="pad" width="1040" height="400"></canvas>
+    <div class="row"><span class="hint">สีปากกา</span>
+      <button class="sw on" data-c="#111" style="background:#111"></button>
+      <button class="sw" data-c="#1646b8" style="background:#1646b8"></button>
+      <button class="sw" data-c="#7c3aed" style="background:#7c3aed"></button>
+      <button class="sw" data-c="#dc2626" style="background:#dc2626"></button>
+      <span class="sp"></span><button id="sClr">ล้างกระดาน</button></div></div>
+  <div id="pU" hidden><input type="file" id="sf" accept="image/*"><p class="hint">ระบบจะลบพื้นหลังสีขาวให้อัตโนมัติ</p>
+    <img id="sPrev" style="max-width:100%;background:#fff;border-radius:10px;display:none"></div>
+  <div class="row"><span class="sp"></span><button id="sCancel">ปิด</button><button class="pri" id="sSave">บันทึกและวางบนหน้านี้</button></div>
+  <div class="mdiv"></div>
+  <div class="gl" style="margin-bottom:10px">ลายเซ็นที่บันทึกไว้ · กด × เพื่อลบ · กดที่ลายเซ็นเพื่อใช้งาน</div>
+  <div class="chips wrap" id="mSigList"></div>
+</div></div>
+<div id="toast"></div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const {PDFDocument,degrees}=PDFLib;
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const BW=794,NS='http://www.w3.org/2000/svg',FONT='"Sarabun","Noto Sans Thai",system-ui,sans-serif';
+let srcs=[],pages=[],sigs=[],uid=0,sel=null,lastSel=null,tok=0,dragId=null,tool='select',selIt=null,zoom=1,fit=false,undo=[],zt=null;
+const cols={text:'#111111',edit:'#111111',pen:'#1646b8',hl:'#ffd400',tick:'#16a34a',cross:'#dc2626'};
+const sz={text:18,edit:18,pen:3,hl:16,erase:16,tick:28,cross:28};
+const cur=()=>pages.find(p=>p.id===sel);
+function toast(t,ms=2500){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',ms)}
+const isPdf=f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name);
+/* coordinates: annotations are stored in "base units" (page width = 1, height = p.a), upright, independent of rotation */
+const dims=p=>p.rot%180?{W:p.a,H:1}:{W:1,H:p.a};
+const toD=(p,x,y)=>p.rot===90?[p.a-y,x]:p.rot===180?[1-x,p.a-y]:p.rot===270?[y,1-x]:[x,y];
+const toB=(p,u,v)=>p.rot===90?[v,p.a-u]:p.rot===180?[1-u,p.a-v]:p.rot===270?[1-v,u]:[u,v];
+
+/* ---------- load files ---------- */
+async function addFiles(files){
+  toast('กำลังอ่านไฟล์…',60000);
+  for(const f of files){
+    try{
+      if(isPdf(f)){
+        const bytes=new Uint8Array(await f.arrayBuffer());
+        const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+        const si=srcs.push({kind:'pdf',bytes,doc})-1;
+        for(let n=1;n<=doc.numPages;n++){const p={id:++uid,s:si,n,rot:0,an:[]};{const c0=await render(p,260);p.a=c0.height/c0.width;p.th=c0.toDataURL('image/jpeg',.75)}pages.push(p)}
+      }else if(f.type.startsWith('image/')||/\.(png|jpe?g|webp|gif|bmp)$/i.test(f.name)){
+        const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(f)});
+        const k=Math.min(1,3000/Math.max(img.naturalWidth,img.naturalHeight));
+        const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        const jpg=/jpe?g/i.test(f.type)||/\.jpe?g$/i.test(f.name);
+        const url=c.toDataURL(jpg?'image/jpeg':'image/png',.92);
+        const si=srcs.push({kind:'img',canvas:c,jpg,bytes:b64(url)})-1;
+        const p={id:++uid,s:si,n:1,rot:0,an:[]};{const c0=await render(p,260);p.a=c0.height/c0.width;p.th=c0.toDataURL('image/jpeg',.75)}pages.push(p);
+      }else toast('ข้ามไฟล์ที่ไม่รองรับ: '+f.name);
+    }catch(e){console.error(e);toast('เปิดไฟล์ไม่ได้: '+f.name,4000)}
+  }
+  toast('เรียบร้อย',800);draw();
+}
+const b64=u=>Uint8Array.from(atob(u.split(',')[1]),c=>c.charCodeAt(0));
+
+async function render(p,tw){
+  const s=srcs[p.s],c=document.createElement('canvas');
+  if(s.kind==='img'){c.width=tw;c.height=Math.round(tw*s.canvas.height/s.canvas.width);c.getContext('2d').drawImage(s.canvas,0,0,c.width,c.height);return c}
+  const pg=await s.doc.getPage(p.n),v=pg.getViewport({scale:tw/pg.getViewport({scale:1}).width});
+  c.width=Math.round(v.width);c.height=Math.round(v.height);
+  await pg.render({canvasContext:c.getContext('2d'),viewport:v}).promise;return c;
+}
+function rotC(c,d){
+  d=((d%360)+360)%360;if(!d)return c;
+  const o=document.createElement('canvas'),sw=d%180;o.width=sw?c.height:c.width;o.height=sw?c.width:c.height;
+  const x=o.getContext('2d');x.translate(o.width/2,o.height/2);x.rotate(d*Math.PI/180);x.drawImage(c,-c.width/2,-c.height/2);return o;
+}
+
+
+
+/* ---------- sidebar ---------- */
+function draw(){
+  const has=pages.length>0;$('#empty').hidden=has;$('#app').hidden=!has;
+  if(has&&!cur())sel=pages[0].id;
+  drawSide();showPage();
+}
+function drawSide(){
+  const g=$('#side'),st=g.scrollTop;g.innerHTML='';
+  pages.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='card'+(p.id===sel?' act':'');d.draggable=true;
+    const odd=p.rot%180,n=p.an.filter(a=>a.t!=='cover').length;
+    d.innerHTML=`<div class="th"><img src="${p.th}" style="max-width:${odd?130:150}px;max-height:${odd?150:130}px;transform:rotate(${p.rot}deg)">${n?`<span class="badge">✎ ${n}</span>`:''}</div>
+    <div class="num">หน้า ${i+1}</div>
+    <div class="acts"><button data-a="U" title="ย้ายขึ้น">▲</button><button data-a="rl" title="หมุนซ้าย">↺</button><button data-a="rr" title="หมุนขวา">↻</button><button data-a="x" title="ลบหน้า">🗑</button><button data-a="D" title="ย้ายลง">▼</button></div>`;
+    d.onclick=e=>{const a=e.target.dataset.a;
+      if(!a){if(sel!==p.id){sel=p.id;drawSide();showPage()}return}
+      if(a==='rl')p.rot=(p.rot+270)%360;if(a==='rr')p.rot=(p.rot+90)%360;
+      if(a==='x'){pages.splice(i,1);if(sel===p.id)sel=(pages[Math.min(i,pages.length-1)]||{}).id}
+      if(a==='U'&&i>0)[pages[i-1],pages[i]]=[pages[i],pages[i-1]];
+      if(a==='D'&&i<pages.length-1)[pages[i+1],pages[i]]=[pages[i],pages[i+1]];
+      draw()};
+    d.ondragstart=e=>{dragId=p.id;d.classList.add('drag');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','p')};
+    d.ondragend=()=>{dragId=null;d.classList.remove('drag')};
+    d.ondragover=e=>{if(dragId){e.preventDefault();d.classList.add('over')}};
+    d.ondragleave=()=>d.classList.remove('over');
+    d.ondrop=e=>{if(!dragId)return;e.preventDefault();e.stopPropagation();
+      const from=pages.findIndex(x=>x.id===dragId),[m]=pages.splice(from,1);pages.splice(pages.findIndex(x=>x.id===p.id)+(from<i?1:0),0,m);dragId=null;drawSide()};
+    g.appendChild(d);
+  });
+  const ad=document.createElement('div');ad.className='card add';ad.innerHTML='<div class="plus">＋</div><div class="num">เพิ่มเอกสาร</div>';ad.onclick=()=>$('#fi').click();g.appendChild(ad);
+  g.scrollTop=st;
+}
+function go(d){const i=pages.indexOf(cur())+d;if(i>=0&&i<pages.length){sel=pages[i].id;drawSide();showPage()}}
+
+/* ---------- viewer + zoom ---------- */
+function layoutPg(p){
+  const d=dims(p),pg=$('#pg');
+  pg.style.width=BW*zoom+'px';pg.style.aspectRatio=d.W+'/'+d.H;pg.style.setProperty('--u',BW*zoom/d.W+'px');
+  $('#ov').setAttribute('viewBox',`0 0 ${d.W} ${d.H}`);$('#zm').value=Math.round(zoom*100);
+}
+async function showPage(){
+  const p=cur();if(!p)return;const t=++tok;
+  if(lastSel!==sel){selIt=null;lastSel=sel}
+  if(fit)zoom=Math.max(.25,Math.min(2,($('#stage').clientWidth-(innerWidth<760?16:40))/BW));
+  $('#pInfo').textContent=`หน้า ${pages.indexOf(p)+1}/${pages.length}`;
+  layoutPg(p);paintAn();
+  const w=Math.round(Math.min(3000,Math.max(900,BW*zoom*Math.min(devicePixelRatio||1,2))));
+  const c=rotC(await render(p,w),p.rot);if(t!==tok)return;
+  const pc=$('#pc');pc.width=c.width;pc.height=c.height;pc.getContext('2d').drawImage(c,0,0);
+  const a=document.querySelector('.card.act');if(a)a.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function setZoom(z){zoom=Math.max(.25,Math.min(4,z));fit=false;const p=cur();if(!p)return;layoutPg(p);clearTimeout(zt);zt=setTimeout(showPage,250)}
+function stepZoom(d){const L=[25,50,75,100,125,150,200,300,400],c=zoom*100;const n=d>0?L.find(x=>x>c+1):[...L].reverse().find(x=>x<c-1);if(n)setZoom(n/100)}
+
+/* ---------- annotations ---------- */
+function snap(){const p=cur();if(!p)return;undo.push({id:p.id,an:structuredClone(p.an)});if(undo.length>40)undo.shift()}
+function doUndo(){const u=undo.pop();if(!u)return toast('ไม่มีรายการให้เลิกทำ');const p=pages.find(x=>x.id===u.id);if(!p)return doUndo();p.an=u.an;sel=p.id;selIt=null;draw()}
+function del(it,keepCover){const p=cur();p.an=p.an.filter(a=>a.id!==it.id&&(keepCover||a.id!==it.cv));if(selIt===it.id)selIt=null;paintAn();drawSide();syncOpts()}
+const markSvg=(k,c)=>`<svg viewBox="0 0 10 10" style="width:100%;height:100%;display:block"><path d="${k==='tick'?'M1.5 5.5 4 8 8.5 2':'M2 2 8 8M8 2 2 8'}" stroke="${c}" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function ptB(ev,p){const r=$('#pg').getBoundingClientRect(),d=dims(p);return toB(p,(ev.clientX-r.left)/r.width*d.W,(ev.clientY-r.top)/r.height*d.H)}
+function paintAn(){
+  const p=cur(),pg=$('#pg'),ov=$('#ov');pg.querySelectorAll('.it').forEach(e=>e.remove());ov.innerHTML='';if(!p)return;
+  p.an=p.an.filter(a=>!(a.t==='text'&&!a.txt.trim()&&a.id!==selIt));
+  const d=dims(p);
+  p.an.forEach(it=>{
+    if(it.t==='pen'){const l=document.createElementNS(NS,'polyline');l.setAttribute('points',it.pts.map(q=>toD(p,q[0],q[1]).join(',')).join(' '));
+      l.setAttribute('fill','none');l.setAttribute('stroke',it.col);l.setAttribute('stroke-width',it.w);l.setAttribute('stroke-linecap','round');l.setAttribute('stroke-linejoin','round');if(it.hl)l.setAttribute('stroke-opacity','.35');ov.appendChild(l);return}
+    const[cx,cy]=toD(p,it.x,it.y),e=document.createElement('div');e.className='it'+(it.id===selIt?' sel':'');e.dataset.id=it.id;
+    e.style.left=cx/d.W*100+'%';e.style.top=cy/d.H*100+'%';
+    if(it.t==='cover'){const o=p.rot%180;e.className='it cv';e.style.width=(o?it.h:it.w)/d.W*100+'%';e.style.height=(o?it.w:it.h)/d.H*100+'%';e.style.background=it.col;pg.appendChild(e);return}
+    if(it.t==='sig'){e.style.width=it.w/d.W*100+'%';e.innerHTML=`<img src="${it.src}">`}
+    if(it.t==='mark'){e.style.width=it.s/d.W*100+'%';e.style.aspectRatio='1';e.innerHTML=markSvg(it.k,it.col)}
+    if(it.t==='text'){e.classList.add('tx');e.style.fontSize=`calc(var(--u)*${it.fs})`;e.style.color=it.col;e.textContent=it.txt}
+    e.onpointerdown=ev=>{
+      if(tool==='erase'){ev.stopPropagation();snap();del(it);return}
+      if(tool==='edit'){ev.stopPropagation();if(it.t==='text'){selIt=it.id;startEdit(e,it)}return}
+      if(tool!=='select')return;
+      ev.stopPropagation();if(e.isContentEditable)return;ev.preventDefault();
+      const was=selIt===it.id;selIt=it.id;pg.querySelectorAll('.it').forEach(q=>q.classList.toggle('sel',q===e));syncOpts();
+      const r=pg.getBoundingClientRect(),k=d.W/r.width,sx=ev.clientX,sy=ev.clientY,b0=[it.x,it.y],o=toB(p,0,0);let moved=false;
+      e.setPointerCapture(ev.pointerId);
+      e.onpointermove=m=>{const dx=(m.clientX-sx),dy=(m.clientY-sy);if(!moved&&Math.hypot(dx,dy)<4)return;if(!moved){moved=true;snap()}
+        const b=toB(p,dx*k,dy*k);it.x=b0[0]+b[0]-o[0];it.y=b0[1]+b[1]-o[1];const q=toD(p,it.x,it.y);e.style.left=q[0]/d.W*100+'%';e.style.top=q[1]/d.H*100+'%'};
+      e.onpointerup=()=>{e.onpointermove=e.onpointerup=null;if(!moved&&was&&it.t==='text')startEdit(e,it);else drawSide()};
+    };
+    pg.appendChild(e);
+  });
+}
+function startEdit(e,it){
+  e.contentEditable='true';e.focus();const r=document.createRange();r.selectNodeContents(e);const s=getSelection();s.removeAllRanges();s.addRange(r);
+  e.oninput=()=>{it.txt=e.innerText.replace(/\n$/,'')};syncOpts();
+  e.onblur=()=>{e.contentEditable='false';e.oninput=e.onblur=null;if(!it.txt.trim())del(it,true);else drawSide()};
+}
+const elOf=id=>$('#pg').querySelector(`[data-id="${id}"]`);
+function placeSig(i){const p=cur(),s=sigs[i];if(!p||!s)return;const d=dims(p),[x,y]=toB(p,d.W/2,d.H*.72);snap();
+  const it={id:++uid,t:'sig',src:s.src,ar:s.ar,x,y,w:.28};p.an.push(it);selIt=it.id;setTool('select');drawSide()}
+const saveSigs=()=>{try{localStorage.setItem('pdfstudio.sigs',JSON.stringify(sigs))}catch(e){}};
+function listSigs(){
+  const h=sigs.length?sigs.map((s,i)=>`<div class="s" data-i="${i}" title="กดเพื่อวางบนหน้านี้"><img src="${s.src}"><button class="x" data-d="${i}" title="ลบลายเซ็นนี้">×</button></div>`).join(''):'<span class="hint">ยังไม่มีลายเซ็นที่บันทึกไว้</span>';
+  ['#sigList','#mSigList'].forEach(q=>{const c=$(q);c.innerHTML=h;
+    c.querySelectorAll('.s').forEach(e=>e.onclick=ev=>{const d=ev.target.dataset.d;
+      if(d!==undefined){ev.stopPropagation();sigs.splice(+d,1);saveSigs();listSigs();return}
+      $('#mSig').classList.remove('on');placeSig(+e.dataset.i)})});
+}
+async function editExisting(p,bx,by){
+  const s=srcs[p.s];if(s.kind!=='pdf'){toast('เครื่องมือนี้ใช้กับหน้าที่มาจากไฟล์ PDF เท่านั้น');return}
+  if(p.an.some(a=>a.t==='cover'&&Math.abs(bx-a.x)<a.w/2&&Math.abs(by-a.y)<a.h/2))return;
+  const pg=await s.doc.getPage(p.n),vp=pg.getViewport({scale:1}),tc=await pg.getTextContent(),px=bx*vp.width,py=by*vp.width;
+  for(const t of tc.items){
+    if(!t.str.trim())continue;const m=pdfjsLib.Util.transform(vp.transform,t.transform),h=Math.hypot(m[2],m[3]),x=m[4],y=m[5]-h,w=t.width;
+    if(px>=x-2&&px<=x+w+2&&py>=y-2&&py<=y+h*1.25+2){
+      snap();const W=vp.width,cv={id:++uid,t:'cover',x:(x+w/2)/W,y:(y+h*.55)/W,w:(w+3)/W,h:h*1.3/W,col:'#ffffff'};
+      const it={id:++uid,t:'text',x:cv.x,y:cv.y,txt:t.str,fs:h/W,col:cols.edit,cv:cv.id};
+      p.an.push(cv,it);selIt=it.id;paintAn();const e=elOf(it.id);if(e)startEdit(e,it);return;
+    }
+  }
+  toast('ไม่พบข้อความตรงจุดที่คลิก (ไฟล์สแกนที่เป็นภาพแก้ไขข้อความไม่ได้ — ใช้เครื่องมือ T เพิ่มข้อความแทน)',4000);
+}
+/* page pointer: place / draw / erase */
+$('#pg').onpointerdown=ev=>{
+  const p=cur();if(!p||!ev.isPrimary)return;
+  if(tool==='select'){if(selIt){selIt=null;paintAn();syncOpts()}return}
+  if(tool==='sig')return;
+  const[bx,by]=ptB(ev,p);
+  if(tool==='text'){snap();const it={id:++uid,t:'text',x:bx,y:by,txt:'',fs:sz.text/BW,col:cols.text};p.an.push(it);selIt=it.id;tool='select';setTool('select',true);paintAn();const e=elOf(it.id);if(e)startEdit(e,it);ev.preventDefault();return}
+  if(tool==='tick'||tool==='cross'){snap();p.an.push({id:++uid,t:'mark',k:tool,s:sz[tool]/BW,col:cols[tool],x:bx,y:by});paintAn();drawSide();return}
+  if(tool==='edit'){editExisting(p,bx,by);return}
+  const pg=$('#pg');pg.setPointerCapture(ev.pointerId);ev.preventDefault();snap();
+  if(tool==='erase'){
+    const r=sz.erase/BW/1.2,hit=a=>a.t==='pen'&&a.pts.some(q=>Math.hypot(q[0]-ev_b[0],q[1]-ev_b[1])<r+a.w/2);let ev_b=[bx,by];
+    const run=()=>{const n=p.an.length;p.an=p.an.filter(a=>!hit(a));if(p.an.length!==n){paintAn();drawSide()}};
+    run();pg.onpointermove=m=>{ev_b=ptB(m,p);run()};
+  }else{
+    const it={id:++uid,t:'pen',hl:tool==='hl',col:cols[tool],w:sz[tool]/BW,pts:[[bx,by]]};p.an.push(it);
+    const l=document.createElementNS(NS,'polyline');l.setAttribute('fill','none');l.setAttribute('stroke',it.col);l.setAttribute('stroke-width',it.w);l.setAttribute('stroke-linecap','round');l.setAttribute('stroke-linejoin','round');if(it.hl)l.setAttribute('stroke-opacity','.35');
+    $('#ov').appendChild(l);const d=dims(p);
+    const upd=()=>l.setAttribute('points',it.pts.map(q=>toD(p,q[0],q[1]).join(',')).join(' ')+(it.pts.length===1?' '+toD(p,bx+.0001,by).join(','):''));upd();
+    pg.onpointermove=m=>{it.pts.push(ptB(m,p));upd()};
+  }
+  pg.onpointerup=pg.onpointercancel=()=>{pg.onpointermove=pg.onpointerup=null;drawSide()};
+};
+
+/* ---------- toolbar state ---------- */
+const HINT={select:'คลิกเพื่อเลือก ลากเพื่อย้าย · คลิกซ้ำที่ข้อความเพื่อพิมพ์แก้',text:'คลิกบนหน้ากระดาษที่ต้องการวางข้อความ แล้วพิมพ์',edit:'คลิกที่ข้อความเดิมใน PDF เพื่อแก้ไข',pen:'ลากเพื่อเขียน',hl:'ลากทับข้อความเพื่อไฮไลท์',erase:'ลากทับเส้นปากกา/ไฮไลท์เพื่อลบ หรือคลิกที่วัตถุเพื่อลบ',tick:'คลิกเพื่อวางเครื่องหมายถูก',cross:'คลิกเพื่อวางกากบาท',sig:'เลือกลายเซ็นเพื่อวางบนหน้า'};
+const RNG={text:[8,96],edit:[8,96],pen:[1,20],hl:[6,48],erase:[6,60],tick:[12,120],cross:[12,120]};
+function selItem(){const p=cur();return p?p.an.find(a=>a.id===selIt&&a.t!=='cover'&&(tool==='select'||(a.t==='text'&&(tool==='text'||tool==='edit')))):null}
+function syncOpts(){
+  const it=selItem();
+  const colored=it?(it.t==='text'||it.t==='mark'):cols[tool]!==undefined;
+  const sized=it?true:!!RNG[tool];
+  $('#oCol').hidden=!colored;$('#oSz').hidden=!sized;$('#oSig').hidden=tool!=='sig';$('#oDel').hidden=!it;
+  $('#oHint').textContent=it?'':HINT[tool];
+  if(colored)renderSw(it);
+  if(sized){const r=it?(it.t==='sig'?[40,500]:it.t==='mark'?[12,120]:[8,96]):RNG[tool],v=it?(it.t==='text'?it.fs:it.t==='mark'?it.s:it.w)*BW:sz[tool];
+    $('#sz').min=r[0];$('#sz').max=r[1];$('#sz').value=v;$('#szv').textContent=Math.round(v)}
+}
+function setTool(t,keep){
+  tool=t;if(!keep)selIt=null;
+  document.querySelectorAll('#tools [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  $('#pg').dataset.tool=t;if(!keep)paintAn();syncOpts();
+  if(keep)document.querySelectorAll('#tools [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+}
+document.querySelectorAll('#tools [data-t]').forEach(b=>b.onclick=()=>setTool(b.dataset.t));
+const PAL=['#111111','#6b7280','#dc2626','#f97316','#16a34a','#1d4ed8','#7c3aed','#ec4899'],PAL_HL=['#ffd400','#4ade80','#ff7ab8','#38bdf8','#fb923c','#c4a8ff'];
+function renderSw(it){
+  const c=(it?it.col:cols[tool]||'').toLowerCase(),pal=!it&&tool==='hl'?PAL_HL:PAL,o=$('#oSw');
+  o.innerHTML=pal.map(x=>`<button class="sw${x===c?' on':''}" data-c="${x}" style="background:${x}" title="${x}"></button>`).join('');
+  o.querySelectorAll('.sw').forEach(b=>b.onclick=()=>setCol(b.dataset.c));
+  $('#col').value=/^#[0-9a-f]{6}$/.test(c)?c:'#111111';$('#colWrap').classList.toggle('on',!pal.includes(c));
+}
+function setCol(v){const it=selItem();if(it){snap();it.col=v;paintAn()}else if(cols[tool]!==undefined)cols[tool]=v;syncOpts()}
+$('#col').oninput=e=>setCol(e.target.value);
+$('#sz').onpointerdown=()=>{if(selItem())snap()};
+$('#sz').oninput=e=>{const v=+e.target.value,it=selItem();$('#szv').textContent=v;
+  if(it){if(it.t==='text')it.fs=v/BW;else if(it.t==='mark')it.s=v/BW;else it.w=v/BW;paintAn()}else sz[tool]=v};
+$('#oDel').onclick=()=>{const it=selItem();if(it){snap();del(it)}};
+$('#sNew').onclick=()=>openSig();
+$('#uBtn').onclick=doUndo;
+$('#pPrev').onclick=()=>go(-1);$('#pNext').onclick=()=>go(1);
+$('#rL').onclick=()=>{const p=cur();if(p){p.rot=(p.rot+270)%360;draw()}};
+$('#rR').onclick=()=>{const p=cur();if(p){p.rot=(p.rot+90)%360;draw()}};
+$('#zOut').onclick=()=>stepZoom(-1);$('#zIn').onclick=()=>stepZoom(1);
+$('#zFit').onclick=()=>{fit=true;showPage()};
+$('#zm').onchange=e=>setZoom((+e.target.value||100)/100);
+const stage=$('#stage'),ptr=new Map();let pd=0,pz=1;const dist=()=>{const a=[...ptr.values()];return Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1])};
+stage.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(zoom*(e.deltaY<0?1.1:.9))}},{passive:false});
+stage.addEventListener('pointerdown',e=>{ptr.set(e.pointerId,[e.clientX,e.clientY]);if(ptr.size===2){pd=dist();pz=zoom}});
+stage.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;ptr.set(e.pointerId,[e.clientX,e.clientY]);if(ptr.size===2&&pd)setZoom(pz*dist()/pd)});
+['pointerup','pointercancel'].forEach(n=>stage.addEventListener(n,e=>{ptr.delete(e.pointerId);if(ptr.size<2)pd=0}));
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(fit&&cur())showPage()},200)});
+
+/* ---------- overlay raster for export ---------- */
+const loadImg=u=>new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.src=u});
+async function overlay(p){
+  await document.fonts.ready;
+  const d=dims(p),cw=2200,k=cw/d.W,c=document.createElement('canvas');c.width=cw;c.height=Math.round(d.H*k);const x=c.getContext('2d');
+  for(const it of p.an){
+    if(it.t==='pen'){x.save();x.globalAlpha=it.hl?.35:1;x.strokeStyle=it.col;x.lineWidth=it.w*k;x.lineCap=x.lineJoin='round';x.beginPath();
+      it.pts.forEach((q,i)=>{const[u,v]=toD(p,q[0],q[1]);i?x.lineTo(u*k,v*k):x.moveTo(u*k,v*k)});if(it.pts.length===1){const[u,v]=toD(p,it.pts[0][0],it.pts[0][1]);x.lineTo(u*k+.01,v*k)}x.stroke();x.restore();continue}
+    const[cx,cy]=toD(p,it.x,it.y);
+    if(it.t==='cover'){const o=p.rot%180,w=(o?it.h:it.w)*k,h=(o?it.w:it.h)*k;x.fillStyle=it.col;x.fillRect(cx*k-w/2,cy*k-h/2,w,h)}
+    else if(it.t==='sig'){const im=await loadImg(it.src),w=it.w*k;x.drawImage(im,cx*k-w/2,cy*k-w*it.ar/2,w,w*it.ar)}
+    else if(it.t==='mark'){const s=it.s*k;x.save();x.translate(cx*k-s/2,cy*k-s/2);x.scale(s/10,s/10);x.strokeStyle=it.col;x.lineWidth=1.4;x.lineCap=x.lineJoin='round';
+      x.stroke(new Path2D(it.k==='tick'?'M1.5 5.5 4 8 8.5 2':'M2 2 8 8M8 2 2 8'));x.restore()}
+    else if(it.t==='text'){const fs=it.fs*k,lh=fs*1.25,L=it.txt.split('\n');x.font=`${fs}px ${FONT}`;x.fillStyle=it.col;x.textBaseline='middle';
+      const mw=Math.max(...L.map(l=>x.measureText(l).width)),y0=cy*k-L.length*lh/2;L.forEach((l,i)=>x.fillText(l,cx*k-mw/2,y0+(i+.5)*lh))}
+  }
+  return c.toDataURL('image/png');
+}
+
+/* ---------- signature creation ---------- */
+const pad=$('#pad'),px=pad.getContext('2d');let ink='#111',drawing=false,mode='D',upImg=null;
+function padPos(e){const r=pad.getBoundingClientRect();return[(e.clientX-r.left)*pad.width/r.width,(e.clientY-r.top)*pad.height/r.height]}
+pad.onpointerdown=e=>{drawing=true;pad.setPointerCapture(e.pointerId);const[x,y]=padPos(e);px.strokeStyle=ink;px.lineWidth=5;px.lineCap=px.lineJoin='round';px.beginPath();px.moveTo(x,y);px.lineTo(x+.1,y+.1);px.stroke()};
+pad.onpointermove=e=>{if(!drawing)return;const[x,y]=padPos(e);px.lineTo(x,y);px.stroke()};
+pad.onpointerup=()=>drawing=false;
+document.querySelectorAll('#mSig [data-c]').forEach(b=>b.onclick=()=>{ink=b.dataset.c;document.querySelectorAll('#mSig [data-c]').forEach(x=>x.classList.toggle('on',x===b))});
+$('#sClr').onclick=()=>px.clearRect(0,0,pad.width,pad.height);
+function tab(m){mode=m;$('#pD').hidden=m!=='D';$('#pU').hidden=m!=='U';$('#tD').classList.toggle('act',m==='D');$('#tU').classList.toggle('act',m==='U')}
+$('#tD').onclick=()=>tab('D');$('#tU').onclick=()=>tab('U');
+$('#sf').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{
+  const k=Math.min(1,800/i.width),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;
+  const x=c.getContext('2d');x.drawImage(i,0,0,c.width,c.height);const d=x.getImageData(0,0,c.width,c.height),a=d.data;
+  for(let j=0;j<a.length;j+=4){const m=Math.min(a[j],a[j+1],a[j+2]);if(m>225)a[j+3]=0;else if(m>170)a[j+3]=Math.round(255*(225-m)/55)}
+  x.putImageData(d,0,0);upImg=c;$('#sPrev').src=c.toDataURL();$('#sPrev').style.display='block'};i.src=URL.createObjectURL(f)};
+function openSig(){px.clearRect(0,0,pad.width,pad.height);upImg=null;$('#sPrev').style.display='none';tab('D');$('#mSig').classList.add('on')}
+$('#sCancel').onclick=()=>$('#mSig').classList.remove('on');
+$('#sSave').onclick=()=>{
+  let c=mode==='D'?pad:upImg;if(!c){toast('ยังไม่มีลายเซ็น');return}
+  const t=document.createElement('canvas');t.width=c.width;t.height=c.height;t.getContext('2d').drawImage(c,0,0);
+  const d=t.getContext('2d').getImageData(0,0,t.width,t.height).data;let x0=t.width,y0=t.height,x1=0,y1=0;
+  for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++)if(d[(y*t.width+x)*4+3]>10){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}
+  if(x1<=x0){toast('ยังไม่มีลายเซ็น');return}
+  const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(t,x0,y0,o.width,o.height,0,0,o.width,o.height);
+  sigs.push({src:o.toDataURL('image/png'),ar:o.height/o.width});saveSigs();$('#mSig').classList.remove('on');
+  listSigs();if(cur())placeSig(sigs.length-1);
+};
+
+/* ---------- export ---------- */
+async function build(){
+  const out=await PDFDocument.create(),cache={},semb={};
+  for(const p of pages){
+    const s=srcs[p.s];let pg,R;
+    if(s.kind==='pdf'){
+      cache[p.s]??=await PDFDocument.load(s.bytes,{ignoreEncryption:true});
+      [pg]=await out.copyPages(cache[p.s],[p.n-1]);out.addPage(pg);
+      R=(((pg.getRotation().angle+p.rot)%360)+360)%360;
+    }else{
+      const w=s.canvas.width,h=s.canvas.height,k=h>=w?Math.min(595/w,842/h):Math.min(842/w,595/h),W=w*k,H=h*k;
+      pg=out.addPage([W,H]);const im=s.jpg?await out.embedJpg(s.bytes):await out.embedPng(s.bytes);
+      pg.drawImage(im,{x:0,y:0,width:W,height:H});R=p.rot;
+    }
+    pg.setRotation(degrees(R));
+    const {width:W,height:H}=pg.getSize(),dw=R%180?H:W,dh=R%180?W:H;
+    if(p.an.length){const im=await out.embedPng(b64(await overlay(p)));let x,y;const v=dh;
+      if(R===0){x=0;y=H-v}else if(R===90){x=v;y=0}else if(R===180){x=W;y=v}else{x=W-v;y=H}
+      pg.drawImage(im,{x,y,width:dw,height:dh,rotate:degrees(R)})}
+  }
+  return out.save();
+}
+$('#bDl').onclick=async()=>{
+  if(!pages.length){toast('ยังไม่มีเอกสาร');return}
+  const b=$('#bDl');b.disabled=true;b.textContent='กำลังสร้างไฟล์…';
+  try{
+    const bytes=await build(),dl=await claude.use('downloads');
+    if(!dl){toast('ดาวน์โหลดไม่ได้ในมุมมองนี้');return}
+    const name=($('#fn').value.trim()||'merged').replace(/\.pdf$/i,'')+'.pdf';
+    await dl.save({filename:name,data:bytes});
+  }catch(e){if(e&&e.code==='declined')toast('ยกเลิกการบันทึก');else{console.error(e);toast('สร้างไฟล์ไม่สำเร็จ',4000)}}
+  finally{b.disabled=false;b.textContent='⬇ ดาวน์โหลด PDF'}
+};
+
+
+
+/* ---------- misc wiring ---------- */
+const fi=$('#fi');$('#bAdd').onclick=$('#bAdd2').onclick=()=>fi.click();
+fi.onchange=()=>{addFiles([...fi.files]);fi.value=''};
+$('#bAll').onclick=()=>{pages.forEach(p=>p.rot=(p.rot+90)%360);draw()};
+$('#bClr').onclick=()=>{if(pages.length&&confirm('ล้างเอกสารทั้งหมด?')){pages=[];srcs=[];sel=null;undo=[];draw()}};
+addEventListener('keydown',e=>{
+  const ed=e.target.isContentEditable||['INPUT','TEXTAREA'].includes(e.target.tagName);
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.target.isContentEditable){e.preventDefault();doUndo();return}
+  if(ed||$('#mSig').classList.contains('on'))return;
+  if((e.key==='Delete'||e.key==='Backspace')&&selItem()){snap();del(selItem())}
+  if(e.key==='Escape')setTool('select');
+  if(e.key==='PageUp')go(-1);if(e.key==='PageDown')go(1);
+});
+addEventListener('dragover',e=>{if(e.dataTransfer.types.includes('Files'))e.preventDefault()});
+addEventListener('drop',e=>{if(e.dataTransfer.files.length){e.preventDefault();addFiles([...e.dataTransfer.files])}});
+const IC={select:'M5 3l14 7-6 2-2 6z',text:'M5 6V4h14v2M12 4v16M9 20h6',edit:'M4 7h9M4 12h5M4 17h4M13 18l6-6 2 2-6 6h-2z',pen:'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z',hl:'M15 4l5 5-9 9H6v-5zM4 21h16',erase:'M7 21h13M5 13l7-7 7 7-6 6H9z',tick:'M5 12l5 5 9-10',cross:'M6 6l12 12M18 6L6 18',sig:'M3 17c2-5 4-8 5-6s-1 6 1 6 3-5 5-5 1 3 3 3 2-1 3-2M3 21h18',undo:'M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3'};
+document.querySelectorAll('i[data-i]').forEach(e=>e.innerHTML=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[e.dataset.i]}"/></svg>`);
+try{sigs=JSON.parse(localStorage.getItem('pdfstudio.sigs')||'[]')}catch(e){sigs=[]}
+setTool('select');listSigs();draw();
+</script>
+</body>
+</html>
