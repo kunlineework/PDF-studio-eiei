@@ -64,7 +64,7 @@ header input{background:var(--pn);border:1px solid var(--bd);color:var(--tx);bor
 .sw.on{box-shadow:0 0 0 2px var(--pn),0 0 0 4px var(--rd)}
 .sw.cust{background:conic-gradient(#f87171,#fbbf24,#4ade80,#38bdf8,#a78bfa,#f472b6,#f87171);overflow:hidden;display:inline-block}
 .sw.cust input{position:absolute;inset:-6px;width:40px;height:40px;opacity:0;cursor:pointer}
-input[type=range]{width:130px;accent-color:var(--rd)}
+#sz{width:auto;min-width:72px;padding:4px 8px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;min-height:30px;cursor:pointer}#sz:focus{outline:none;border-color:var(--rd)}#oFmt button{min-width:32px;padding:2px 8px}#oFmt button.on{background:var(--pa);border-color:var(--rd);color:var(--rd2);font-weight:600}
 .chips .s{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:3px 8px;cursor:pointer;height:32px;position:relative;flex:none}
 .chips .s:hover{border-color:var(--rd)}
 .chips .s img{height:100%;display:block}
@@ -135,7 +135,8 @@ input[type=range]{width:130px;accent-color:var(--rd)}
       </div>
       <div class="opts" id="opts">
         <span id="oCol" class="chips"><span class="hint">สี</span><span id="oSw" class="chips"></span><label class="sw cust" id="colWrap" title="เลือกสีอื่น"><input type="color" id="col" aria-label="สีอื่นๆ"></label></span>
-        <span id="oSz" class="chips"><span class="hint">ขนาด</span><input type="range" id="sz"><b id="szv"></b></span>
+        <span id="oSz" class="chips"><span class="hint">ขนาด</span><select id="sz" aria-label="ขนาดตัวอักษร"></select></span>
+        <span id="oFmt" class="chips"><button id="fB" title="ตัวหนา"><b>B</b></button><button id="fI" title="ตัวเอียง"><i>I</i></button><button id="fU" title="ขีดเส้นใต้"><u>U</u></button></span>
         <span id="oSig" class="chips"><span id="sigList" class="chips wrap"></span><button id="sNew">＋ สร้างลายเซ็นใหม่</button></span>
         <button id="oDel">🗑 ลบที่เลือก</button>
         <span id="oHint" class="hint"></span>
@@ -176,6 +177,9 @@ const BW=794,NS='http://www.w3.org/2000/svg',FONT='"Sarabun","Noto Sans Thai",sy
 let srcs=[],pages=[],sigs=[],uid=0,sel=null,lastSel=null,tok=0,dragId=null,tool='select',selIt=null,zoom=1,fit=false,undo=[],zt=null;
 const cols={text:'#111111',edit:'#111111',pen:'#1646b8',hl:'#ffd400',tick:'#16a34a',cross:'#dc2626'};
 const sz={text:18,edit:18,pen:3,hl:16,erase:16,tick:28,cross:28};
+const FMT={b:false,i:false,u:false};
+const SZL=[1,2,3,4,5,6,8,9,10,11,12,14,16,18,20,22,24,28,32,36,40,48,56,64,72,80,96,120,150,200,300,400,500];
+function fmtStyle(e,it){e.style.fontWeight=it.b?'700':'';e.style.fontStyle=it.i?'italic':'';e.style.textDecoration=it.u?'underline':''}
 const cur=()=>pages.find(p=>p.id===sel);
 function toast(t,ms=2500){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',ms)}
 const isPdf=f=>f.type==='application/pdf'||/\.pdf$/i.test(f.name);
@@ -331,7 +335,7 @@ function paintAn(p){
     if(it.t==='cover'){const o=p.rot%180;e.className='it cv';e.style.width=(o?it.h:it.w)/d.W*100+'%';e.style.height=(o?it.w:it.h)/d.H*100+'%';e.style.background=it.col;pg.appendChild(e);return}
     if(it.t==='sig'){e.style.width=it.w/d.W*100+'%';e.innerHTML=`<img src="${it.src}">`}
     if(it.t==='mark'){e.style.width=it.s/d.W*100+'%';e.style.aspectRatio='1';e.innerHTML=markSvg(it.k,it.col)}
-    if(it.t==='text'){e.classList.add('tx');e.style.fontSize=`calc(var(--u)*${it.fs})`;e.style.color=it.col;e.textContent=it.txt}
+    if(it.t==='text'){e.classList.add('tx');e.style.fontSize=`calc(var(--u)*${it.fs})`;e.style.color=it.col;fmtStyle(e,it);e.textContent=it.txt}
     e.onpointerdown=ev=>{
       if(sel!==p.id){sel=p.id;markAct()}
       if(tool==='erase'){ev.stopPropagation();snap();del(it);return}
@@ -373,7 +377,7 @@ async function editExisting(p,bx,by){
     if(!t.str.trim())continue;const m=pdfjsLib.Util.transform(vp.transform,t.transform),h=Math.hypot(m[2],m[3]),x=m[4],y=m[5]-h,w=t.width;
     if(px>=x-2&&px<=x+w+2&&py>=y-2&&py<=y+h*1.25+2){
       snap();const W=vp.width,cv={id:++uid,t:'cover',x:(x+w/2)/W,y:(y+h*.55)/W,w:(w+3)/W,h:h*1.3/W,col:'#ffffff'};
-      const it={id:++uid,t:'text',x:cv.x,y:cv.y,txt:t.str,fs:h/W,col:cols.edit,cv:cv.id};
+      const it={id:++uid,t:'text',x:cv.x,y:cv.y,txt:t.str,fs:h/W,col:cols.edit,cv:cv.id,b:FMT.b,i:FMT.i,u:FMT.u};
       p.an.push(cv,it);selIt=it.id;paintAn(p);const e=elOf(it.id);if(e)startEdit(e,it);return;
     }
   }
@@ -387,7 +391,7 @@ function pageDown(ev,p){
   if(tool==='select'){if(selIt){selIt=null;document.querySelectorAll('.it.sel').forEach(q=>q.classList.remove('sel'));syncOpts()}return}
   if(tool==='sig')return;
   const[bx,by]=ptB(ev,p);
-  if(tool==='text'){snap();const it={id:++uid,t:'text',x:bx,y:by,txt:'',fs:sz.text/BW,col:cols.text};p.an.push(it);selIt=it.id;tool='select';setTool('select',true);paintAn(p);const e=elOf(it.id);if(e)startEdit(e,it);ev.preventDefault();return}
+  if(tool==='text'){snap();const it={id:++uid,t:'text',x:bx,y:by,txt:'',fs:sz.text/BW,col:cols.text,b:FMT.b,i:FMT.i,u:FMT.u};p.an.push(it);selIt=it.id;tool='select';setTool('select',true);paintAn(p);const e=elOf(it.id);if(e)startEdit(e,it);ev.preventDefault();return}
   if(tool==='tick'||tool==='cross'){snap();p.an.push({id:++uid,t:'mark',k:tool,s:sz[tool]/BW,col:cols[tool],x:bx,y:by});paintAn(p);drawSide();return}
   if(tool==='edit'){editExisting(p,bx,by);return}
   pg.setPointerCapture(ev.pointerId);ev.preventDefault();snap();
@@ -414,10 +418,13 @@ function syncOpts(){
   const colored=it?(it.t==='text'||it.t==='mark'):cols[tool]!==undefined;
   const sized=it?true:!!RNG[tool];
   $('#oCol').hidden=!colored;$('#oSz').hidden=!sized;$('#oSig').hidden=tool!=='sig';$('#oDel').hidden=!it;
+  const showFmt=it?it.t==='text':(tool==='text'||tool==='edit'),fm=it&&it.t==='text'?it:FMT;$('#oFmt').hidden=!showFmt;
+  ['b','i','u'].forEach(k=>$('#f'+k.toUpperCase()).classList.toggle('on',!!fm[k]));
   $('#oHint').textContent=it?'':HINT[tool];
   if(colored)renderSw(it);
   if(sized){const r=it?(it.t==='sig'?[40,500]:it.t==='mark'?[12,120]:[8,96]):RNG[tool],v=it?(it.t==='text'?it.fs:it.t==='mark'?it.s:it.w)*BW:sz[tool];
-    $('#sz').min=r[0];$('#sz').max=r[1];$('#sz').value=v;$('#szv').textContent=Math.round(v)}
+    const cv=Math.round(v),L=SZL.filter(n=>n>=r[0]&&n<=r[1]);if(!L.includes(cv))L.push(cv);L.sort((a,b)=>a-b);
+    $('#sz').innerHTML=L.map(n=>`<option value="${n}"${n===cv?' selected':''}>${n}</option>`).join('')}
 }
 function setTool(t,keep){
   tool=t;if(!keep)selIt=null;
@@ -435,8 +442,9 @@ function renderSw(it){
 }
 function setCol(v){const it=selItem();if(it){snap();it.col=v;paintAn(pageOf(it))}else if(cols[tool]!==undefined)cols[tool]=v;syncOpts()}
 $('#col').oninput=e=>setCol(e.target.value);
-$('#sz').onpointerdown=()=>{if(selItem())snap()};
-$('#sz').oninput=e=>{const v=+e.target.value,it=selItem();$('#szv').textContent=v;
+['B','I','U'].forEach(K=>{const b=$('#f'+K),k=K.toLowerCase();b.onpointerdown=e=>e.preventDefault();
+  b.onclick=()=>{const it=selItem();if(it&&it.t==='text'){snap();it[k]=!it[k];const e=elOf(it.id);if(e)fmtStyle(e,it)}else FMT[k]=!FMT[k];syncOpts()}});
+$('#sz').onchange=e=>{const v=+e.target.value,it=selItem();if(it)snap();
   if(it){if(it.t==='text')it.fs=v/BW;else if(it.t==='mark')it.s=v/BW;else it.w=v/BW;paintAn(pageOf(it))}else sz[tool]=v};
 $('#oDel').onclick=()=>{const it=selItem();if(it){snap();del(it)}};
 $('#sNew').onclick=()=>openSig();
@@ -467,8 +475,8 @@ async function overlay(p){
     else if(it.t==='sig'){const im=await loadImg(it.src),w=it.w*k;x.drawImage(im,cx*k-w/2,cy*k-w*it.ar/2,w,w*it.ar)}
     else if(it.t==='mark'){const s=it.s*k;x.save();x.translate(cx*k-s/2,cy*k-s/2);x.scale(s/10,s/10);x.strokeStyle=it.col;x.lineWidth=1.4;x.lineCap=x.lineJoin='round';
       x.stroke(new Path2D(it.k==='tick'?'M1.5 5.5 4 8 8.5 2':'M2 2 8 8M8 2 2 8'));x.restore()}
-    else if(it.t==='text'){const fs=it.fs*k,lh=fs*1.25,L=it.txt.split('\n');x.font=`${fs}px ${FONT}`;x.fillStyle=it.col;x.textBaseline='middle';
-      const mw=Math.max(...L.map(l=>x.measureText(l).width)),y0=cy*k-L.length*lh/2;L.forEach((l,i)=>x.fillText(l,cx*k-mw/2,y0+(i+.5)*lh))}
+    else if(it.t==='text'){const fs=it.fs*k,lh=fs*1.25,L=it.txt.split('\n');x.font=`${it.i?'italic ':''}${it.b?'700 ':''}${fs}px ${FONT}`;x.fillStyle=it.col;x.textBaseline='middle';
+      const mw=Math.max(...L.map(l=>x.measureText(l).width)),y0=cy*k-L.length*lh/2;L.forEach((l,i)=>{const lx=cx*k-mw/2,ly=y0+(i+.5)*lh;x.fillText(l,lx,ly);if(it.u&&l){x.fillRect(lx,ly+fs*.42,x.measureText(l).width,Math.max(1,fs*.06))}})}
   }
   return c.toDataURL('image/png');
 }
@@ -547,7 +555,7 @@ fi.onchange=()=>{addFiles([...fi.files]);fi.value=''};
 $('#bAll').onclick=()=>{pages.forEach(p=>p.rot=(p.rot+90)%360);draw()};
 $('#bClr').onclick=()=>{if(pages.length&&confirm('ล้างเอกสารทั้งหมด?')){pages=[];srcs=[];sel=null;undo=[];draw()}};
 addEventListener('keydown',e=>{
-  const ed=e.target.isContentEditable||['INPUT','TEXTAREA'].includes(e.target.tagName);
+  const ed=e.target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName);
   if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.target.isContentEditable){e.preventDefault();doUndo();return}
   if(ed||$('#mSig').classList.contains('on'))return;
   if((e.key==='Delete'||e.key==='Backspace')&&selItem()){snap();del(selItem())}
